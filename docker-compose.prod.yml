@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  backend:
+    image: your-dockerhub-username/flask-react-crud-backend:latest
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - DATABASE_URL=sqlite:////data/items.db
+    volumes:
+      - backend-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    image: your-dockerhub-username/flask-react-crud-frontend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://your-server-ip:5000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend-data:
